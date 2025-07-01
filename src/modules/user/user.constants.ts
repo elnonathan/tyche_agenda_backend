@@ -1,0 +1,61 @@
+import { UserRole } from '@/modules/user/user.schema'
+
+export enum INTERNAL_USER_ROLES {
+	ROOT = 'ROOT',
+	ADMIN = 'ADMIN',
+	SUPERVISOR = 'SUPERVISOR',
+	SYSTEM = 'SYSTEM',
+}
+
+export enum CUSTOMER_USER_ROLES {
+	OWNER = 'OWNER',
+	PROVIDER = 'ADMIN',
+	ASSISTANT = 'ASSISTANT',
+}
+
+export enum END_USER_ROLES {
+	CLIENT = 'CLIENT',
+	GUEST = 'GUEST',
+}
+
+const SAFE_ADMINISTRATIVE_ROLES: UserRole[] = [
+	INTERNAL_USER_ROLES.ROOT,
+	INTERNAL_USER_ROLES.ADMIN,
+	CUSTOMER_USER_ROLES.OWNER,
+] as const
+
+const EXTENDED_ADMINISTRATIVE_ROLES: UserRole[] = [
+	...SAFE_ADMINISTRATIVE_ROLES,
+	INTERNAL_USER_ROLES.SUPERVISOR,
+] as const
+
+export const SAFE_RETRIEVE_ROLES: UserRole[] = [...SAFE_ADMINISTRATIVE_ROLES]
+
+export const EXTENDED_RETRIEVE_ROLES: UserRole[] = [
+	...EXTENDED_ADMINISTRATIVE_ROLES,
+] as const
+
+export const PERMISSIVE_RETRIEVE_ROLES: UserRole[] = [
+	...EXTENDED_ADMINISTRATIVE_ROLES,
+	CUSTOMER_USER_ROLES.PROVIDER,
+] as const
+
+export const SAFE_CREATE_ROLES: UserRole[] = [
+	...SAFE_ADMINISTRATIVE_ROLES,
+] as const
+
+export const EXTENDED_CREATE_ROLES: UserRole[] = [
+	...EXTENDED_ADMINISTRATIVE_ROLES,
+] as const
+
+export const SAFE_UPDATE_ROLES: UserRole[] = [
+	...SAFE_ADMINISTRATIVE_ROLES,
+] as const
+
+export const EXTENDED_UPDATE_ROLES: UserRole[] = [
+	...EXTENDED_ADMINISTRATIVE_ROLES,
+] as const
+
+export const SAFE_DELETE_ROLES: UserRole[] = [
+	...SAFE_ADMINISTRATIVE_ROLES,
+] as const

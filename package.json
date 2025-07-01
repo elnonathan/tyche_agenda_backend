@@ -1,0 +1,49 @@
+{
+  "name": "k2-express-ts-scaffolding",
+  "version": "0.1.0",
+  "description": "K2 Scaffolding: Node | Express | TypeScript | ESLint | Prettier",
+  "main": "build/server.js",
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/luxon": "^3.6.2",
+    "drizzle-kit": "^0.31.1",
+    "eslint": "^9.9.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.9.0",
+    "prettier": "3.3.3",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.1.0"
+  },
+  "scripts": {
+    "type-check": "tsc",
+    "prettier": "npx prettier . --write",
+    "dev": "npx prettier . --write && NODE_ENV=development tsx watch src/server",
+    "test": "echo \"Warning: no test specified\"",
+    "build": "npx prettier . --check && npm run test && rimraf build && tsc --noEmit false && tsc-alias && npm run serve",
+    "serve": "node build/server.js"
+  },
+  "keywords": [
+    "chatbot",
+    "ollama",
+    "express"
+  ],
+  "author": "Jonathan Muñoz Lucas <contacto@nonathan.com.mx>",
+  "license": "ISC",
+  "dependencies": {
+    "@libsql/client": "^0.15.8",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.44.2",
+    "express": "^4.19.2",
+    "luxon": "^3.6.1",
+    "yup": "^1.6.1"
+  }
+}
