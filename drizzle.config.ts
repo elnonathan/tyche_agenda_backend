@@ -10,3 +10,5 @@ export default defineConfig({
 		authToken: process.env.TURSO_AUTH_TOKEN as string,
 	},
 })
+
+// RUN MIGRATIONS: npx drizzle-kit push

@@ -2,25 +2,25 @@ import {
 	Appointment,
 	AppointmentSchema,
 } from '@/modules/appointment/appointment.schema'
-import { findAppointment } from '@/modules/appointment/actions/appointment.retrieve'
 import { CustomError } from '@/errors/errors.utils'
 import { HTTP_CODE_NUMBER } from '@/router/router.constants'
 import { database } from '@/database/database.client'
 import { appointment } from '@/modules/appointment/appointment.model'
 import { COMMON_NUMBERS } from '@/constants'
-import { transformAppointmentFromDB } from '@/modules/appointment/appointment.helpers'
+import { findAppointment } from '@/modules/appointment/actions/appointment.retrieve'
+import { convertDateToISO } from '@/modules/appointment/appointment.helpers'
 
 export const createAppointment = async ({
 	title,
 	description,
 	duration,
-	date,
+	date: iso_date,
 	client,
 	provider,
 	url,
 	origin,
 	destination,
-}: Appointment): Promise<Appointment | null> => {
+}: Appointment): Promise<AppointmentSchema | null> => {
 	if (!client?.id || !provider?.id)
 		throw new CustomError(
 			HTTP_CODE_NUMBER?.CLIENT_ERRORS?.BAD_REQUEST,
@@ -30,13 +30,15 @@ export const createAppointment = async ({
 	const { id: client_id } = client
 	const { id: provider_id } = provider
 
+	const date: string = convertDateToISO(iso_date)
+
 	const found: AppointmentSchema | null = await findAppointment({
-		client,
-		provider,
-		url,
 		title,
 		date,
-	})
+		url,
+		client,
+		provider,
+	} as Appointment)
 
 	if (found)
 		throw new CustomError(
@@ -52,10 +54,10 @@ export const createAppointment = async ({
 		client_id,
 		provider_id,
 		url,
-		origin_latitude: origin?.latitude,
-		origin_longitude: origin?.longitude,
-		destination_latitude: destination?.latitude,
-		destination_longitude: destination?.longitude,
+		origin_latitude: origin?.latitude || null,
+		origin_longitude: origin?.longitude || null,
+		destination_latitude: destination?.latitude || null,
+		destination_longitude: destination?.longitude || null,
 	} satisfies AppointmentSchema
 
 	const { rowsAffected } = await database.insert(appointment).values(next)
@@ -66,5 +68,5 @@ export const createAppointment = async ({
 			'createAppointment'
 		)
 
-	return transformAppointmentFromDB(next)
+	return next
 }

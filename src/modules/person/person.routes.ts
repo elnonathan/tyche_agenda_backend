@@ -14,11 +14,12 @@ import {
 	validateRequestSchema,
 } from '@/router/router.validations'
 import {
-	hasPersonFilterSchema,
-	hasPersonSchema,
+	has_person_create_schema,
+	has_person_filter_schema,
+	has_person_update_schema,
 } from '@/modules/person/person.validations'
 import { HTTP_REQUEST_DATA_SOURCE } from '@/router/router.constants'
-import { hasIdSchema } from '@/database/database.validations'
+import { has_id_schema } from '@/database/database.validations'
 import {
 	EXTENDED_CREATE_ROLES,
 	SAFE_RETRIEVE_ROLES,
@@ -30,14 +31,17 @@ export const person_routes: Router = express.Router()
 person_routes.post(
 	'/',
 	validateRequestRole(EXTENDED_CREATE_ROLES),
-	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.BODY, hasPersonSchema),
+	validateRequestSchema(
+		HTTP_REQUEST_DATA_SOURCE.BODY,
+		has_person_create_schema
+	),
 	requestAsynchronously(createPersonService)
 )
 
 person_routes.get(
 	'/get/:id',
 	validateRequestRole(SAFE_RETRIEVE_ROLES),
-	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.PARAMS, hasIdSchema),
+	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.PARAMS, has_id_schema),
 	requestAsynchronously(getPersonService)
 )
 
@@ -46,7 +50,7 @@ person_routes.get(
 	validateRequestRole(SAFE_RETRIEVE_ROLES),
 	validateRequestSchema(
 		HTTP_REQUEST_DATA_SOURCE.QUERY,
-		hasPersonFilterSchema
+		has_person_filter_schema
 	),
 	requestAsynchronously(findPersonService)
 )
@@ -56,7 +60,7 @@ person_routes.get(
 	validateRequestRole(SAFE_RETRIEVE_ROLES),
 	validateRequestSchema(
 		HTTP_REQUEST_DATA_SOURCE.QUERY,
-		hasPersonFilterSchema
+		has_person_filter_schema
 	),
 	requestAsynchronously(searchPeopleService)
 )
@@ -66,7 +70,7 @@ person_routes.get(
 	validateRequestRole(SAFE_RETRIEVE_ROLES),
 	validateRequestSchema(
 		HTTP_REQUEST_DATA_SOURCE.QUERY,
-		hasPersonFilterSchema
+		has_person_filter_schema
 	),
 	requestAsynchronously(listPeopleService)
 )
@@ -74,7 +78,10 @@ person_routes.get(
 person_routes.put(
 	'/:id',
 	validateRequestRole(SAFE_UPDATE_ROLES),
-	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.PARAMS, hasIdSchema),
-	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.BODY, hasPersonSchema),
+	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.PARAMS, has_id_schema),
+	validateRequestSchema(
+		HTTP_REQUEST_DATA_SOURCE.BODY,
+		has_person_update_schema
+	),
 	requestAsynchronously(updatePersonService)
 )

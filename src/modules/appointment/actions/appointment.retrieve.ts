@@ -1,6 +1,5 @@
 import {
 	Appointment,
-	AppointmentFilter,
 	AppointmentSchema,
 } from '@/modules/appointment/appointment.schema'
 import { and, between, BinaryOperator, eq, like, SQL } from 'drizzle-orm'
@@ -10,6 +9,8 @@ import { getDayBounds } from '@/modules/appointment/appointment.helpers'
 import { DEFAULT_APPOINTMENT_LIST_LIMIT } from '@/modules/appointment/appointment.constants'
 import { COMMON_NUMBERS } from '@/constants'
 import { Pagination } from '@/database/database.schema'
+import { CustomError } from '@/errors/errors.utils'
+import { HTTP_CODE_NUMBER } from '@/router/router.constants'
 
 const list = async (
 	{
@@ -19,12 +20,15 @@ const list = async (
 		limit: DEFAULT_APPOINTMENT_LIST_LIMIT,
 		offset: COMMON_NUMBERS.ZERO,
 	}
-): Promise<AppointmentSchema[]> =>
-	((await database
+): Promise<AppointmentSchema[]> => {
+	const list: AppointmentSchema[] = (await database
 		.select()
 		.from(appointment)
 		.limit(Number(limit))
-		.offset(Number(offset))) as AppointmentSchema[]) || []
+		.offset(Number(offset))) as AppointmentSchema[]
+
+	return list || []
+}
 
 const find = async (
 	condition: SQL<BinaryOperator>,
@@ -32,13 +36,16 @@ const find = async (
 		limit: DEFAULT_APPOINTMENT_LIST_LIMIT,
 		offset: COMMON_NUMBERS.ZERO,
 	}
-): Promise<AppointmentSchema[]> =>
-	((await database
+): Promise<AppointmentSchema[]> => {
+	const found: AppointmentSchema[] = (await database
 		.select()
 		.from(appointment)
 		.limit(Number(limit))
 		.offset(Number(offset))
-		.where(condition)) as AppointmentSchema[]) || []
+		.where(condition)) as AppointmentSchema[]
+
+	return found || []
+}
 
 const filterAppointmentsById = async (
 	{ id }: Pick<AppointmentSchema, 'id'>,
@@ -52,6 +59,38 @@ const filterAppointmentsById = async (
 		eq(appointment.id, id),
 		pagination
 	)
+
+const filterAppointmentByTitleAndDate = async (
+	{
+		title,
+		date,
+		client_id,
+		provider_id,
+	}: Pick<
+		AppointmentSchema,
+		'title' | 'date' | 'client_id' | 'provider_id'
+	>,
+	pagination?: Pagination
+): Promise<AppointmentSchema[]> => {
+	if (!title || !date) return []
+
+	const [start, end] = getDayBounds(date)
+
+	return await find(
+		// @ts-expect-error : schema title, client_id and provider_id properties do exist
+		and(
+			// @ts-expect-error : schema title property does exist
+			like(appointment.title, `%${title}%`),
+			// @ts-expect-error : schema date property does exist
+			between(appointment.date, start, end),
+			// @ts-expect-error : schema client_id property does exist
+			eq(appointment.client_id, client_id),
+			// @ts-expect-error : schema provider_id property does exist
+			eq(appointment.provider_id, provider_id)
+		),
+		pagination
+	)
+}
 
 const filterAppointmentByTitle = async (
 	{
@@ -133,10 +172,25 @@ const filterAppointment = async (
 ): Promise<AppointmentSchema[]> => {
 	let appointments: AppointmentSchema[] = []
 
-	if (!client?.id || !provider?.id) return appointments
+	if (!client?.id || !provider?.id)
+		throw new CustomError(
+			HTTP_CODE_NUMBER?.CLIENT_ERRORS?.BAD_REQUEST,
+			'filterAppointment'
+		)
 
 	const { id: client_id } = client
 	const { id: provider_id } = provider
+
+	if (title && date)
+		return await filterAppointmentByTitleAndDate(
+			{
+				title,
+				date,
+				client_id,
+				provider_id,
+			},
+			pagination
+		)
 
 	if (title)
 		appointments = await filterAppointmentByTitle(
@@ -148,7 +202,7 @@ const filterAppointment = async (
 			pagination
 		)
 
-	if (date)
+	if (date && appointments.length < COMMON_NUMBERS.ONE)
 		appointments = await filterAppointmentByDate(
 			{
 				date,
@@ -158,7 +212,7 @@ const filterAppointment = async (
 			pagination
 		)
 
-	if (url)
+	if (url && appointments.length < COMMON_NUMBERS.ONE)
 		appointments = await filterAppointmentByUrl(
 			{
 				url,
@@ -168,24 +222,32 @@ const filterAppointment = async (
 			pagination
 		)
 
-	if (!title && !date && !url) appointments = await list(pagination)
-
 	return appointments
 }
 
-export const getAppointment = async (
-	{ id }: Pick<Appointment, 'id'> = {} as Appointment
-): Promise<AppointmentSchema | null> => {
-	if (!id) return null
+export const getAppointment = async ({
+	id,
+}: Pick<Appointment, 'id'>): Promise<AppointmentSchema> => {
+	if (!id)
+		throw new CustomError(
+			HTTP_CODE_NUMBER?.CLIENT_ERRORS?.BAD_REQUEST,
+			'getAppointment'
+		)
 
 	const [found]: Awaited<AppointmentSchema[]> =
 		await filterAppointmentsById({ id })
 
-	return found || null
+	if (!found)
+		throw new CustomError(
+			HTTP_CODE_NUMBER?.CLIENT_ERRORS?.NOT_FOUND,
+			'getAppointment'
+		)
+
+	return found
 }
 
 export const findAppointment = async (
-	appointment: AppointmentFilter = {} as Appointment
+	appointment: Appointment = {} as Appointment
 ): Promise<AppointmentSchema | null> => {
 	const pagination: Pagination = {
 		limit: COMMON_NUMBERS.ONE,
@@ -197,12 +259,11 @@ export const findAppointment = async (
 		pagination
 	)
 
-	if (!found) return null
-	return found
+	return found || null
 }
 
 export const searchAppointments = async (
-	appointment: AppointmentFilter = {} as Appointment,
+	appointment: Appointment,
 	pagination?: Pagination
 ): Promise<AppointmentSchema[]> =>
 	await filterAppointment(appointment, pagination)

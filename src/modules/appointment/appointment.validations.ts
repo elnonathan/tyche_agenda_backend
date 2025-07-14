@@ -29,7 +29,11 @@ export const appointment_location_schema = {
 		.required(),
 }
 
-export const hasAppointmentSchema = yup.object().shape({
+export const has_appointment_location_schema = yup
+	.object()
+	.shape(appointment_location_schema)
+
+export const has_appointment_retrieve_schema = yup.object().shape({
 	id: yup.number(),
 	title: yup
 		.string()
@@ -53,11 +57,45 @@ export const hasAppointmentSchema = yup.object().shape({
 		.string()
 		.min(MIN_APPOINTMENT_URL_LENGTH)
 		.max(MAX_APPOINTMENT_URL_LENGTH),
-	origin: yup.object().shape(appointment_location_schema),
-	destination: yup.object().shape(appointment_location_schema),
+	origin: yup.object().shape(appointment_location_schema).nullable(),
+	destination: yup.object().shape(appointment_location_schema).nullable(),
 })
 
-export const hasAppointmentFilterSchema = yup.object().shape({
+export const has_appointment_create_schema = yup.object().shape({
+	id: yup.number(),
+	title: yup
+		.string()
+		.min(MIN_APPOINTMENT_TITLE_LENGTH)
+		.max(MAX_APPOINTMENT_TITLE_LENGTH)
+		.required(),
+	description: yup.string().max(MAX_APPOINTMENT_DESCRIPTION_LENGTH),
+	duration: yup
+		.number()
+		.min(MIN_APPOINTMENT_DURATION_LENGTH)
+		.max(MAX_APPOINTMENT_DURATION_LENGTH)
+		.required(),
+	date: yup
+		.string()
+		.min(MIN_APPOINTMENT_DATE_LENGTH)
+		.max(MAX_APPOINTMENT_DATE_LENGTH)
+		.required(),
+	client: yup.object().shape({
+		id: yup.number().required(),
+	}),
+	provider: yup.object().shape({
+		id: yup.number().required(),
+	}),
+	url: yup
+		.string()
+		.min(MIN_APPOINTMENT_URL_LENGTH)
+		.max(MAX_APPOINTMENT_URL_LENGTH),
+	origin: yup.object().shape(appointment_location_schema).nullable(),
+	destination: yup.object().shape(appointment_location_schema).nullable(),
+})
+
+export const has_appointment_update_schema = has_appointment_create_schema
+
+export const has_appointment_filter_schema = yup.object().shape({
 	title: yup
 		.string()
 		.min(MIN_APPOINTMENT_TITLE_LENGTH)
@@ -66,8 +104,8 @@ export const hasAppointmentFilterSchema = yup.object().shape({
 		.string()
 		.min(MIN_APPOINTMENT_DATE_LENGTH)
 		.max(MAX_APPOINTMENT_DATE_LENGTH),
-	client_id: yup.number(),
-	provider_id: yup.number(),
+	client_id: yup.number().required(),
+	provider_id: yup.number().required(),
 	url: yup
 		.string()
 		.min(MIN_APPOINTMENT_URL_LENGTH)

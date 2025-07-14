@@ -19,12 +19,15 @@ const list = async (
 		limit: DEFAULT_APPOINTMENT_LIST_LIMIT,
 		offset: COMMON_NUMBERS.ZERO,
 	}
-): Promise<PersonSchema[]> =>
-	((await database
+): Promise<PersonSchema[]> => {
+	const list: PersonSchema[] = (await database
 		.select()
 		.from(person)
 		.limit(Number(limit))
-		.offset(Number(offset))) as PersonSchema[]) || []
+		.offset(Number(offset))) as PersonSchema[]
+
+	return list || []
+}
 
 const find = async (
 	condition: SQL<BinaryOperator>,
@@ -32,13 +35,16 @@ const find = async (
 		limit: DEFAULT_APPOINTMENT_LIST_LIMIT,
 		offset: COMMON_NUMBERS.ZERO,
 	}
-): Promise<PersonSchema[]> =>
-	((await database
+): Promise<PersonSchema[]> => {
+	const found: PersonSchema[] = (await database
 		.select()
 		.from(person)
 		.limit(Number(limit))
 		.offset(Number(offset))
-		.where(condition)) as PersonSchema[]) || []
+		.where(condition)) as PersonSchema[]
+
+	return found || []
+}
 
 const filterPersonById = async (
 	{ id }: Pick<PersonSchema, 'id'>,

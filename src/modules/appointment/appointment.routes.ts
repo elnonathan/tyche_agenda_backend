@@ -5,8 +5,9 @@ import {
 } from '@/router/router.validations'
 import { HTTP_REQUEST_DATA_SOURCE } from '@/router/router.constants'
 import {
-	hasAppointmentFilterSchema,
-	hasAppointmentSchema,
+	has_appointment_create_schema,
+	has_appointment_filter_schema,
+	has_appointment_update_schema,
 } from '@/modules/appointment/appointment.validations'
 import { requestAsynchronously } from '@/router/router.utils'
 import {
@@ -18,7 +19,7 @@ import {
 	searchAppointmentsService,
 	updateAppointmentService,
 } from '@/modules/appointment/appointment.controller'
-import { hasIdSchema } from '@/database/database.validations'
+import { has_id_schema } from '@/database/database.validations'
 import {
 	EXTENDED_CREATE_ROLES,
 	PERMISSIVE_RETRIEVE_ROLES,
@@ -33,7 +34,7 @@ appointment_routes.post(
 	validateRequestRole(EXTENDED_CREATE_ROLES),
 	validateRequestSchema(
 		HTTP_REQUEST_DATA_SOURCE.BODY,
-		hasAppointmentSchema
+		has_appointment_create_schema
 	),
 	requestAsynchronously(createAppointmentService)
 )
@@ -41,7 +42,7 @@ appointment_routes.post(
 appointment_routes.get(
 	'/get/:id',
 	validateRequestRole(PERMISSIVE_RETRIEVE_ROLES),
-	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.PARAMS, hasIdSchema),
+	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.PARAMS, has_id_schema),
 	requestAsynchronously(getAppointmentService)
 )
 
@@ -50,7 +51,7 @@ appointment_routes.get(
 	validateRequestRole(PERMISSIVE_RETRIEVE_ROLES),
 	validateRequestSchema(
 		HTTP_REQUEST_DATA_SOURCE.QUERY,
-		hasAppointmentFilterSchema
+		has_appointment_filter_schema
 	),
 	requestAsynchronously(findAppointmentService)
 )
@@ -60,7 +61,7 @@ appointment_routes.get(
 	validateRequestRole(PERMISSIVE_RETRIEVE_ROLES),
 	validateRequestSchema(
 		HTTP_REQUEST_DATA_SOURCE.QUERY,
-		hasAppointmentFilterSchema
+		has_appointment_filter_schema
 	),
 	requestAsynchronously(searchAppointmentsService)
 )
@@ -70,7 +71,7 @@ appointment_routes.get(
 	validateRequestRole(PERMISSIVE_RETRIEVE_ROLES),
 	validateRequestSchema(
 		HTTP_REQUEST_DATA_SOURCE.QUERY,
-		hasAppointmentFilterSchema
+		has_appointment_filter_schema
 	),
 	requestAsynchronously(listAppointmentsService)
 )
@@ -80,7 +81,7 @@ appointment_routes.put(
 	validateRequestRole(SAFE_UPDATE_ROLES),
 	validateRequestSchema(
 		HTTP_REQUEST_DATA_SOURCE.BODY,
-		hasAppointmentSchema
+		has_appointment_update_schema
 	),
 	requestAsynchronously(updateAppointmentService)
 )
@@ -88,6 +89,6 @@ appointment_routes.put(
 appointment_routes.delete(
 	'/:id',
 	validateRequestRole(SAFE_DELETE_ROLES),
-	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.PARAMS, hasIdSchema),
+	validateRequestSchema(HTTP_REQUEST_DATA_SOURCE.PARAMS, has_id_schema),
 	requestAsynchronously(deleteAppointmentService)
 )

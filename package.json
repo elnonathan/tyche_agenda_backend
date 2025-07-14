@@ -9,7 +9,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/luxon": "^3.6.2",
-    "drizzle-kit": "^0.31.1",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^9.1.0",
     "globals": "^15.9.0",

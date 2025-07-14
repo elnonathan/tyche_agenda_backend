@@ -21,10 +21,10 @@ export const updateAppointment = async ({
 	url,
 	origin,
 	destination,
-}: Appointment): Promise<Appointment> => {
+}: Appointment): Promise<AppointmentSchema> => {
 	const found: AppointmentSchema | null = await getAppointment({ id })
 
-	if (!client || !provider)
+	if (!client.id || !provider.id)
 		throw new CustomError(
 			HTTP_CODE_NUMBER?.CLIENT_ERRORS?.BAD_REQUEST,
 			'updateAppointment'
@@ -36,16 +36,18 @@ export const updateAppointment = async ({
 			'updateAppointment'
 		)
 
-	const update: Omit<Appointment, 'id'> = {
+	const update: Omit<AppointmentSchema, 'id'> = {
 		title,
 		description,
 		duration,
 		date,
-		client,
-		provider,
+		client_id: client.id,
+		provider_id: client.id,
 		url,
-		origin,
-		destination,
+		origin_latitude: origin?.latitude || null,
+		origin_longitude: origin?.latitude || null,
+		destination_latitude: destination?.latitude || null,
+		destination_longitude: destination?.longitude || null,
 	}
 
 	const { rowsAffected = COMMON_NUMBERS.ZERO } = await database
@@ -60,5 +62,5 @@ export const updateAppointment = async ({
 			'updateAppointment'
 		)
 
-	return { ...found, ...update }
+	return update
 }

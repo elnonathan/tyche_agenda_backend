@@ -16,11 +16,10 @@ export class CustomError extends Error {
 
 	constructor(error_status?: number, error_path?: string) {
 		const status: number = defineErrorStatus(error_status)
-		const path: string = defineErrorPath(error_path)
 
 		super()
 		this._status = status
-		this._path = path
+		this._path = defineErrorPath(error_path)
 		this._type = defineErrorType(status)
 		this._message = defineErrorMessage(status)
 	}

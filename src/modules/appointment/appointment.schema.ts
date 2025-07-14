@@ -1,6 +1,6 @@
 import { Person } from '@/modules/person/person.schema'
 
-type AppointmentLocation = {
+export type AppointmentLocation = {
 	latitude: number
 	longitude: number
 }
@@ -14,8 +14,8 @@ export type Appointment = {
 	client: Person
 	provider: Person
 	url?: string
-	origin?: AppointmentLocation
-	destination?: AppointmentLocation
+	origin: AppointmentLocation | null
+	destination: AppointmentLocation | null
 }
 
 export type AppointmentSchema = Omit<
@@ -24,13 +24,8 @@ export type AppointmentSchema = Omit<
 > & {
 	client_id: number
 	provider_id: number
-	origin_latitude?: number
-	origin_longitude?: number
-	destination_latitude?: number
-	destination_longitude?: number
+	origin_latitude: number | null
+	origin_longitude: number | null
+	destination_latitude: number | null
+	destination_longitude: number | null
 }
-
-export type AppointmentFilter = Pick<
-	Appointment,
-	'client' | 'provider' | 'title' | 'date' | 'url'
->

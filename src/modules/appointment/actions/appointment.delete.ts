@@ -12,7 +12,7 @@ import { COMMON_NUMBERS } from '@/constants'
 
 export const deleteAppointment = async ({
 	id,
-}: Appointment): Promise<Pick<Appointment, 'id'>> => {
+}: Appointment): Promise<AppointmentSchema> => {
 	const found: AppointmentSchema | null = await getAppointment({ id })
 
 	if (!found)
@@ -32,5 +32,5 @@ export const deleteAppointment = async ({
 			'deleteAppointment'
 		)
 
-	return { id } as Pick<Appointment, 'id'>
+	return { id } as AppointmentSchema
 }

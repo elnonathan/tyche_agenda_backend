@@ -36,9 +36,13 @@ export const person_schema = {
 		.required(),
 }
 
-export const hasPersonSchema = yup.object().shape(person_schema)
+export const has_person_retrieve_schema = yup.object().shape(person_schema)
 
-export const hasPersonFilterSchema = yup.object().shape({
+export const has_person_create_schema = yup.object().shape(person_schema)
+
+export const has_person_update_schema = yup.object().shape(person_schema)
+
+export const has_person_filter_schema = yup.object().shape({
 	email: yup.string().min(MIN_SEARCH_EMAIL_LENGTH).max(MAX_EMAIL_LENGTH),
 	phone: yup.string().min(MIN_SEARCH_PHONE_LENGTH).max(MAX_PHONE_LENGTH),
 })
